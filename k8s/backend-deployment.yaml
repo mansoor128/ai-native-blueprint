@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: favorites-backend
+  namespace: favorites
+  labels:
+    app: favorites-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: favorites-backend
+  template:
+    metadata:
+      labels:
+        app: favorites-backend
+    spec:
+      containers:
+        - name: favorites-backend
+          # Replace ACCOUNT_ID / tag after CI pushes to ECR
+          image: ACCOUNT_ID.dkr.ecr.eu-west-1.amazonaws.com/ai-native-favorites-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: favorites-backend-config
+            - secretRef:
+                name: favorites-backend-secret
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 40
+            periodSeconds: 20

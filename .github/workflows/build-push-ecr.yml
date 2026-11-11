@@ -1,0 +1,102 @@
+name: Build and Push to AWS ECR
+
+on:
+  push:
+    branches:
+      - 03-devops
+      - main
+    paths:
+      - "app/**"
+      - ".github/workflows/build-push-ecr.yml"
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION || 'eu-west-1' }}
+  BACKEND_ECR_REPOSITORY: ${{ vars.BACKEND_ECR_REPOSITORY || 'ai-native-favorites-backend' }}
+  FRONTEND_ECR_REPOSITORY: ${{ vars.FRONTEND_ECR_REPOSITORY || 'ai-native-favorites-frontend' }}
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build-and-push:
+    name: Checkout, build, push to ECR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set image metadata
+        id: meta
+        run: |
+          REGISTRY="${{ steps.ecr-login.outputs.registry }}"
+          SHA_TAG="${GITHUB_SHA::12}"
+          echo "registry=${REGISTRY}" >> "$GITHUB_OUTPUT"
+          echo "sha_tag=${SHA_TAG}" >> "$GITHUB_OUTPUT"
+          echo "backend_image=${REGISTRY}/${{ env.BACKEND_ECR_REPOSITORY }}" >> "$GITHUB_OUTPUT"
+          echo "frontend_image=${REGISTRY}/${{ env.FRONTEND_ECR_REPOSITORY }}" >> "$GITHUB_OUTPUT"
+
+      - name: Ensure ECR repositories exist
+        run: |
+          ensure_repo() {
+            local name="$1"
+            if ! aws ecr describe-repositories --repository-names "$name" --region "$AWS_REGION" >/dev/null 2>&1; then
+              aws ecr create-repository \
+                --repository-name "$name" \
+                --region "$AWS_REGION" \
+                --image-scanning-configuration scanOnPush=true \
+                --encryption-configuration encryptionType=AES256
+            fi
+          }
+          ensure_repo "${{ env.BACKEND_ECR_REPOSITORY }}"
+          ensure_repo "${{ env.FRONTEND_ECR_REPOSITORY }}"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./app/backend
+          file: ./app/backend/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.backend_image }}:${{ steps.meta.outputs.sha_tag }}
+            ${{ steps.meta.outputs.backend_image }}:latest
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./app/frontend
+          file: ./app/frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.frontend_image }}:${{ steps.meta.outputs.sha_tag }}
+            ${{ steps.meta.outputs.frontend_image }}:latest
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
+
+      - name: Summary
+        run: |
+          {
+            echo "## ECR images pushed"
+            echo ""
+            echo "- Backend: \`${{ steps.meta.outputs.backend_image }}:${{ steps.meta.outputs.sha_tag }}\`"
+            echo "- Frontend: \`${{ steps.meta.outputs.frontend_image }}:${{ steps.meta.outputs.sha_tag }}\`"
+            echo "- Also tagged: \`latest\`"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -63,4 +63,5 @@ Until the task stage is complete, **development has not even started**.
 ### Phase B — Development to production (coding starts)
 
 5. [`development-to-production.md`](./development-to-production.md) — Traditional vs AI path after assignment  
-6. [`../app/`](../app/) — Working favorites app (developer has started TASK-01–04)
+6. [`../app/`](../app/) — Working favorites app (developer has started TASK-01–04)  
+7. [`devops.md`](./devops.md) — CI build/push to ECR + Kubernetes manifests  
