@@ -8,7 +8,7 @@
 | **Assigned to** | Frontend Developer |
 | **Team** | Frontend |
 | **Estimate** | Sprint-ready |
-| **Status** | Ready to pick up |
+| **Status** | In progress — see `app/frontend` |
 | **Depends on** | TASK-03 (My List API) |
 
 ---

@@ -51,9 +51,16 @@ The same feature — but knowledge that architects and senior engineers normally
 
 ## Demo Path (open in order)
 
+### Phase A — Planning (before coding)
+
 1. [`prd.md`](./prd.md) — Business intent  
 2. [`tech-prd.md`](./tech-prd.md) — Architecture, stack, security, compliance  
 3. [`stories/`](./stories/) — What the user experiences  
 4. [`tasks/`](./tasks/) — What gets assigned to developers  
 
 Until the task stage is complete, **development has not even started**.
+
+### Phase B — Development to production (coding starts)
+
+5. [`development-to-production.md`](./development-to-production.md) — Traditional vs AI path after assignment  
+6. [`../app/`](../app/) — Working favorites app (developer has started TASK-01–04)

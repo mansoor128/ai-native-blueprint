@@ -8,9 +8,15 @@
 | **Assigned to** | Backend Developer |
 | **Team** | Backend |
 | **Estimate** | Sprint-ready (junior / intern friendly) |
-| **Status** | Ready to pick up |
+| **Status** | In progress — see `app/backend` |
 
 ---
+
+## Implementation (started)
+
+- `app/backend/.../web/FavoriteController.java` — `POST /api/v1/favorites`
+- `app/backend/.../service/FavoriteService.java` — toggle add/remove
+- `app/backend/.../FavoriteServiceTest.java` — double-click removes favorite
 
 ## Description
 

@@ -8,9 +8,15 @@
 | **Assigned to** | Frontend Developer |
 | **Team** | Frontend |
 | **Estimate** | Sprint-ready (junior / intern friendly) |
-| **Status** | Ready to pick up |
+| **Status** | In progress — see `app/frontend` |
 
 ---
+
+## Implementation (started)
+
+- `app/frontend/src/components/HeartButton.jsx` — SVG heart + optimistic UI
+- `app/frontend/src/components/MovieCard.jsx` — heart on every card
+- `app/frontend/src/api.js` — calls `POST /api/v1/favorites`
 
 ## Description
 

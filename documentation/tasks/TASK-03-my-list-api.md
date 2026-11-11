@@ -8,7 +8,7 @@
 | **Assigned to** | Backend Developer |
 | **Team** | Backend |
 | **Estimate** | Sprint-ready |
-| **Status** | Ready to pick up |
+| **Status** | In progress — see `app/backend` |
 | **Depends on** | TASK-01 (favorites persistence) |
 
 ---

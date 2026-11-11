@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/favorites}
+    username: ${SPRING_DATASOURCE_USERNAME:favorites}
+    password: ${SPRING_DATASOURCE_PASSWORD:favorites}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: false
+
+favorites:
+  cors-allowed-origins: ${FAVORITES_CORS_ALLOWED_ORIGINS:http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173}
